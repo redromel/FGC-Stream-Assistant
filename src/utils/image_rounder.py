@@ -78,7 +78,7 @@ def resize_image(input_path, output_path, base_height):
         new_width = int((float(original_width) * float(height_percent)))
         
         # Resize the image
-        resized_img = img.resize((new_width, base_height), Image.ANTIALIAS)
+        resized_img = img.resize((new_width, base_height), Image.Resampling.LANCZOS)
         
         # Save the resized image
         resized_img.save(output_path)

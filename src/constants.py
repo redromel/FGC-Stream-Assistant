@@ -27,6 +27,7 @@ else:
 MATCH_JSON_PATH = os.path.join(base_dir, 'utils', 'bracket_data.json')
 MATCH_MUTATION_PATH = os.path.join(base_dir, 'utils', 'match_mutation.json')
 LOCATION_LIST_PATH = os.path.join(base_dir, 'utils', 'location_list.json')
+STATE_HASH_PATH = os.path.join(base_dir, 'utils', 'states_hash.json')
 FLAG_PATH = os.path.join(base_dir, 'utils', 'flags')
 
 

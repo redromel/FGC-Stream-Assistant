@@ -10,11 +10,14 @@ from scoreboard_utils import (
     swap_players,
     upload_flag,
     remove_all_extensions,
+    get_state_hash
 )
 
 from writer import *
 from nicegui import ui
 from constants import *
+import shutil
+from nicegui import events
 
 
 class Scoreboard_Components:
@@ -257,12 +260,11 @@ class Scoreboard_Components:
             return
         try:
             scoreboard = await self.get_scoreboard(extract_slug(tournament_url.value))
-
             await self.write_players_json(scoreboard)
-
             await self.lock_scoreboard()
 
-        except:
+        except Exception as e:
+            print(e)
             self.grab_match_switch.value = False
             await get_matches(stream_dropdown, tournament_url, pool_id)
             return
@@ -354,6 +356,8 @@ class Scoreboard_Components:
             print(e)
             return
 
+
+            
     async def write_players_json(self, scoreboard: dict):
 
         player_1 = scoreboard["players"][0]
@@ -364,17 +368,19 @@ class Scoreboard_Components:
         self.player_2_input.value = player_2["gamertag"]
         self.player_2_score.value = player_2["score"]
 
+
         if player_1["state"] is not None:
-            self.player_1_flag.value = player_1["state"]
+            self.player_1_flag.value = await get_state_hash(player_1["state"])
         elif player_1["country"] is not None:
             self.player_1_flag.value = player_1["country"]
         else:
             self.player_1_flag.value = None
 
         if player_2["state"] is not None:
-            self.player_2_flag.value = player_2["state"]
+
+            self.player_2_flag.value = await get_state_hash(player_2["state"])
         elif player_2["country"] is not None:
-            self.player_1_flag.value = player_2["country"]
+            self.player_2_flag.value = player_2["country"]
         else:
             self.player_2_flag.value = None
 
@@ -383,7 +389,8 @@ class Scoreboard_Components:
         self.player_1_score.update()
         self.player_2_input.update()
         self.player_2_score.update()
-
+        # self.player_1_flag.update()
+        # self.player_2_flag.update()
     async def get_scoreboard(self, slug_value: str):
 
         stream_vars = {"setId": self.stream_select.value}
@@ -442,7 +449,6 @@ class Scoreboard_Components:
             return
 
     async def set_flag(self, sender, player: int):
-
         if player == 1:
             destination_path = P1_FLAG_PATH
         else:
@@ -459,6 +465,7 @@ class Scoreboard_Components:
 
         try:
             shutil.copy(flag_path, destination_path)
+            
         except:
             ui.notify("Flag not Found", type="info")
 
@@ -488,45 +495,59 @@ class Scoreboard_Components:
                     e, flag_name.value, corner.value, border.value, player, dialog
                 ),
                 on_rejected=self.handle_file_reject,
-                max_file_size=60_000,
-            ).classes("h-full").props("accept= .jpg").props("accept= .png").props(
-                "accept= .jpeg"
+                max_file_size=60_000_000,
+            ).classes("h-full").props("accept=.jpg").props("accept=.png").props(
+                "accept=.jpeg"
             )
             ui.card_actions()
         dialog.open()
 
     async def handle_file_reject(self):
+        print(self)
         ui.notify("Invalid File", type="negative")
         return
 
     async def handle_file_accept(
-        self, image, flag_name: str, corner: bool, border: bool, player: int, dialog
+    self,
+    event,
+    flag_name: str,
+    corner: bool,
+    border: bool,
+    player: int,
+    dialog,
     ):
+        image = event.file
+
+        # Use the uploaded filename when no custom name was entered.
+        if not flag_name:
+            flag_name = remove_all_extensions(image.name)
+
+        # This must happen after the fallback name is generated.
         if flag_name in self.flag_options:
             ui.notify("Flag Already Exists", type="negative")
             return
 
-        corner_radius = 30
-        border_size = 10
-
-        if corner == False:
-            corner_radius = 0
-        if border == False:
-            border_size = 0
-
-        if flag_name == "":
-            flag_name = remove_all_extensions(image.name)
+        corner_radius = 30 if corner else 0
+        border_size = 10 if border else 0
 
         try:
-            upload_flag(image, flag_name, border_size, corner_radius)
+            await upload_flag(
+                event,
+                flag_name,
+                border_size,
+                corner_radius,
+            )
+
             ui.notify(
-                f"File uploaded successfully: {image.name}", type="positive")
-        except:
+                f"File uploaded successfully: {image.name}",
+                type="positive",
+            )
+        except Exception as error:
+            print(error)
             ui.notify("Upload Failed", type="negative")
             return
 
         await self.set_flag_options(flag_name, player)
-
         dialog.close()
 
     async def set_flag_options(self, flag_name: str, player: int):

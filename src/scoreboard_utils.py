@@ -4,6 +4,8 @@ from constants import MATCH_JSON_PATH
 from utils.image_rounder import add_border_and_round_corners, resize_image
 from writer import scoreboard_writer
 from constants import *
+from pathlib import Path
+from nicegui import events
 
 
 async def change_text(input, path):
@@ -11,6 +13,13 @@ async def change_text(input, path):
         file.write(str(input))
     return
 
+async def get_state_hash(state):
+    with open(STATE_HASH_PATH, "r", encoding="utf-8") as file:
+        states_list = json.load(file)
+    search_code = str(state).strip().upper()
+    for state in states_list:
+        if state["code"].upper() == search_code:
+            return state["name"]
 
 def swap_players():
     with open(MATCH_JSON_PATH, "r", encoding="utf-8") as file:
@@ -66,15 +75,24 @@ def swap_player_files():
         print(f"failed to swap flag files: {e}")
 
 
-def upload_flag(image, flag_name, border_size, corner_radius):
-    path = f"{FLAG_PATH}/{flag_name}.png"
 
-    with open(path, "wb") as f:
-        f.write(image.content.read())
+async def upload_flag(
+    event,
+    flag_name: str,
+    border_size: int,
+    corner_radius: int,
+):
+    path = Path(FLAG_PATH, f"{flag_name}.png")
+    image_data = await event.file.read()
+    path.write_bytes(image_data)
 
     resize_image(path, path, 500)
-    add_border_and_round_corners(path, path, border_size, corner_radius)
-    return
+    add_border_and_round_corners(
+        path,
+        path,
+        border_size,
+        corner_radius,
+    )
 
 
 def remove_all_extensions(filename):

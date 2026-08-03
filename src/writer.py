@@ -115,6 +115,7 @@ def player_info_builder(entrant_data, round, player_count):
     if round == "Grand Final" and player_count == 2:
         player["gamertag"] = entrant_data["entrant"]["name"] + " [L]"
 
+    
     return player
 
 

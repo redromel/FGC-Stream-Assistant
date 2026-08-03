@@ -194,6 +194,7 @@ query ($phaseGroupId: ID!, $page: Int!, $perPage: Int!) {
       nodes{
         id
         state
+        fullRoundText
         slots{
           entrant{
             id
@@ -266,6 +267,7 @@ query($tourneySlug: String){
       sets{
         id
         state
+        fullRoundText
         slots{
           entrant{
             id
