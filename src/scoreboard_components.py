@@ -30,14 +30,14 @@ class Scoreboard_Components:
             "w-full gap-1 justify-items-stretch items-end align-right"
         ):
             self.stream_select = ui.select(
-                label="Select Match",
+                label="Match",
                 options=["Insert Slug"],
                 on_change=lambda e: print(e.value),
                 value=None,
             ).classes("col-start-1 col-span-3")
 
             self.grab_match_switch = ui.switch(
-                f"Get Match",
+                f"Load Match",
             ).classes("col-start-4 col-span-3  justify-self-end self-stretch translate-y-3.5").props("size=xl")
 
             self.report_score_button = (

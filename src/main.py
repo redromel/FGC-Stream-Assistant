@@ -26,7 +26,7 @@ def main():
     with ui.row().classes("w-full justify-center"):
         slug_input = (
             ui.input(
-                label="start.gg URL or Slug",
+                label="Tournament Link",
                 placeholder="https://www.start.gg/tournament/name",
             )
             .props("rounded outlined dense")

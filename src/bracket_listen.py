@@ -16,28 +16,28 @@ class Bracket_Listen():
         
         with ui.grid(columns=4):
             self.event_select = ui.select(
-                label="Select Event",
+                label="Event",
                 options=["Insert Slug"],
                 on_change=lambda e: get_phases(e, self.phase_select),
                 value=None,
             ).classes("col-span-1 w-full")
             
             self.phase_select = ui.select(
-                label="Select Phase",
+                label="Bracket Stage",
                 options=["Insert Slug"],
                 on_change=lambda e: get_pools(e, self.pool_select),
                 value=None,
             ).classes("col-span-1 w-full")
             
             self.pool_select = ui.select(
-                label="Select Pool",
+                label="Pool",
                 options=["Insert Slug"],
                 on_change=lambda e: print(e.value),
                 value=None,
             ).classes("col-span-1 w-full")
             
             self.bracket_switch = ui.switch(
-                "Listen to Pool",
+                "Auto-Update Bracket",
                 on_change=lambda e: bracket_listner(
                     e.sender, self.pool_select
                 ),

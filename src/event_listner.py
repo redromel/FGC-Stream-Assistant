@@ -146,7 +146,7 @@ async def update_matches_stream(slug):
                     event = (set["event"]["name"])
                     round = (set["fullRoundText"])
                     stream_list[set["id"]
-                                ] = f"{stream['stream']['streamName']}:  {event} 『 {player_1} VS {player_2} 』"
+                                ] = f"[STREAM QUEUE] /{stream['stream']['streamName']} ·{player_1} VS {player_2} · {event} "
                 except:
                     pass
 
@@ -174,7 +174,7 @@ async def update_matches_pool(pool_id):
                     player_2 = (set["slots"][1]["entrant"]["name"])
                     event = (set["event"]["name"])
                     round = (set["fullRoundText"])
-                    match_list[set["id"]] = f"{round}:  {event} 『{player_1} VS {player_2}』"
+                    match_list[set["id"]] = f"[POOL] {round} · {player_1} VS {player_2} · {event} "
                 except:
                     pass
             
