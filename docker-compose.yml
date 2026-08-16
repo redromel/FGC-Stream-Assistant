@@ -6,7 +6,7 @@ services:
     container_name: start-stream-assistant
     user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "0.0.0.0::8080" 
+      - "8080:8080" 
     env_file:
       - .env
     volumes:
