@@ -466,8 +466,9 @@ class Scoreboard_Components:
         try:
             shutil.copy(flag_path, destination_path)
             
-        except:
-            ui.notify("Flag not Found", type="info")
+        except Exception as e:
+            if(not e.errno == 1):
+                ui.notify("Flag not Found", type="info")
 
     async def upload_custom_flag_popup(self, player: int):
         with ui.dialog() as dialog, ui.card(align_items="center").style(
@@ -496,9 +497,7 @@ class Scoreboard_Components:
                 ),
                 on_rejected=self.handle_file_reject,
                 max_file_size=60_000_000,
-            ).classes("h-full").props("accept=.jpg").props("accept=.png").props(
-                "accept=.jpeg"
-            )
+            ).classes("h-full").props("accept=.jpg,.jpeg,.png")
             ui.card_actions()
         dialog.open()
 
